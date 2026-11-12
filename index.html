@@ -1,658 +1,508 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VENEVO MÚSICA - Radio En Vivo</title>
-    <!-- Fuentes e Iconos -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --bg-gradient-start: #E61673;
-            --bg-gradient-end: #3A0947;
-            --text-color: #FFFFFF;
-            --accent-color: #FFD700;
-            --card-bg: rgba(255, 255, 255, 0.1);
-            --font-family: 'Poppins', sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: var(--font-family);
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            overflow-x: hidden;
-        }
-
-        /* --- CABECERA --- */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 30px;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(5px);
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .menu-icon {
-            font-size: 1.4rem;
-            cursor: pointer;
-        }
-
-        .brand-title {
-            font-weight: 700;
-            letter-spacing: 1px;
-            font-size: 0.95rem;
-        }
-
-        .station-logo-small {
-            height: 32px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        .header-right {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
-        }
-
-        .status-bar {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .cargando-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent-color);
-            border-radius: 50%;
-            display: inline-block;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            50% { opacity: 0.3; }
-        }
-
-        .stats-row {
-            display: flex;
-            gap: 12px;
-            font-size: 0.75rem;
-            opacity: 0.85;
-        }
-
-        .mode-switch {
-            background: rgba(255,255,255,0.2);
-            border-radius: 15px;
-            padding: 2px;
-            display: flex;
-            font-size: 0.6rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin-top: 2px;
-        }
-
-        .mode-btn {
-            padding: 3px 8px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .mode-btn.active {
-            background-color: #fff;
-            color: var(--bg-gradient-end);
-        }
-
-        /* --- CONTENIDO CENTRAL --- */
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding: 20px;
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .player-stage {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            width: 100%;
-            gap: 40px;
-            margin-bottom: 30px;
-        }
-
-        /* Tarjetas Laterales */
-        .side-card {
-            width: 160px;
-            height: 140px;
-            background: var(--card-bg);
-            backdrop-filter: blur(8px);
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            opacity: 0.5;
-            transition: opacity 0.3s;
-            cursor: pointer;
-            padding: 10px;
-        }
-
-        .side-card:hover { opacity: 0.8; }
-        .side-card h3 { font-size: 1.3rem; margin-bottom: 4px; font-weight: 700; }
-        .side-card p { font-size: 0.6rem; opacity: 0.8; letter-spacing: 0.5px; }
-
-        /* Dial Principal */
-        .radio-dial-container {
-            position: relative;
-            width: 260px;
-            height: 260px;
-            flex-shrink: 0;
-        }
-
-        .dial-ring {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: conic-gradient(from 0deg, var(--accent-color) 0deg, var(--accent-color) 25deg, rgba(255,255,255,0.08) 25deg, rgba(255,255,255,0.08) 360deg);
-            border-radius: 50%;
-            mask: radial-gradient(transparent 58%, black 60%);
-            -webkit-mask: radial-gradient(transparent 58%, black 60%);
-            animation: rotateDial 15s linear infinite;
-        }
-        
-        @keyframes rotateDial {
-            100% { transform: rotate(360deg); }
-        }
-
-        .dial-center {
-            position: absolute;
-            top: 15%;
-            left: 15%;
-            width: 70%;
-            height: 70%;
-            background-color: #120418;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            border: 2px solid rgba(255,255,255,0.1);
-        }
-
-        .station-logo-large {
-            width: 85px;
-            height: auto;
-            margin-bottom: 8px;
-            object-fit: contain;
-        }
-
-        .dial-spectrum {
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            gap: 2px;
-            height: 20px;
-            width: 70%;
-        }
-        
-        .spectrum-bar {
-            width: 2.5px;
-            background: var(--accent-color);
-            animation: pulseSpectrum 0.6s infinite alternate;
-            border-radius: 2px;
-        }
-        
-        @keyframes pulseSpectrum {
-            0% { height: 4px; }
-            100% { height: 18px; }
-        }
-
-        /* Flechas de navegación del dial */
-        .nav-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-            z-index: 10;
-        }
-        .nav-arrow:hover { background: rgba(0,0,0,0.6); }
-        .nav-arrow.prev { left: 10px; }
-        .nav-arrow.next { right: 10px; }
-
-        /* --- CONTROLES DE REPRODUCCIÓN --- */
-        .player-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 25px;
-            width: 100%;
-        }
-
-        .control-icon {
-            font-size: 1.1rem;
-            opacity: 0.8;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .control-icon:hover { opacity: 1; }
-
-        .play-btn {
-            width: 65px;
-            height: 65px;
-            background-color: #fff;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-            cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-        }
-        
-        .play-btn:active { transform: scale(0.95); }
-
-        .play-icon {
-            font-size: 1.5rem;
-            color: var(--bg-gradient-start);
-            margin-left: 3px;
-        }
-
-        /* --- BARRA INFERIOR DE ESTACIÓN ACTUAL --- */
-        .current-station-bar {
-            width: 100%;
-            max-width: 460px;
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .station-logo-tiny {
-            width: 38px;
-            height: 38px;
-            object-fit: contain;
-        }
-
-        .station-info-text {
-            flex: 1;
-        }
-        
-        .station-info-text h2 { font-size: 0.95rem; font-weight: 700; }
-        .station-info-text p { font-size: 0.65rem; opacity: 0.85; }
-
-        .live-progress-container {
-            width: 120px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .progress-bar-bg {
-            width: 100%;
-            height: 3px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(270deg, var(--accent-color) 0%, #FF4500 100%);
-        }
-
-        .live-time-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.55rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-
-        /* --- NAVEGACIÓN INFERIOR (FOOTER) --- */
-        footer {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(10px);
-            padding: 12px 0;
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-        }
-
-        .nav-bar {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.65rem;
-            opacity: 0.6;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .nav-item.active {
-            opacity: 1;
-            color: var(--accent-color);
-            font-weight: 600;
-        }
-        
-        .nav-item i { font-size: 1.1rem; }
-
-        /* Adaptabilidad para móviles */
-        @media (max-width: 768px) {
-            .side-card { display: none; }
-            header { padding: 12px 15px; }
-            main { padding: 10px; }
-            .radio-dial-container { width: 220px; height: 220px; }
-            .current-station-bar { max-width: 92%; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Venevo Música</title>
+  <link rel="stylesheet" href="style.css?v=216" />
 </head>
-<body>
 
-    <!-- Elemento de Audio Oculto con tu Stream -->
-    <audio id="audioStream" src="https://radio.megahostec.com/listen/radio_la_fan_fm/stream" preload="auto"></audio>
+<body class="lafan-theme">
 
-    <!-- CABECERA -->
-    <header>
-        <div class="header-left">
-            <i class="fas fa-bars menu-icon"></i>
-            <span class="brand-title">VENEVO MÚSICA</span>
-            <!-- Logo oficial respaldado -->
-            <img src="https://lafanfm.com/wp-content/uploads/2021/02/LOGO-LA-FAN-FM-1-300x188.png" alt="La Fan FM" class="station-logo-small" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076778.png'">
+  <!-- SPLASH -->
+  <section id="splashScreen" class="splash-screen">
+    <video id="splashVideo" autoplay muted playsinline preload="auto">
+      <source src="venevologovideo.mp4" type="video/mp4">
+    </video>
+  </section>
+
+  <!-- DRAWER -->
+  <div id="drawerOverlay" class="drawer-overlay"></div>
+
+  <aside id="sideDrawer" class="side-drawer">
+    <div class="drawer-header">
+      <h2>VENEVO</h2>
+      <button id="closeDrawerBtn" class="drawer-close">×</button>
+    </div>
+
+    <div class="drawer-profile">
+      <div class="drawer-avatar">V</div>
+      <div>
+        <h3>Venevo Música</h3>
+        <p>Frecuencia Digital</p>
+      </div>
+    </div>
+
+    <button id="drawerFrequencyBtn" class="drawer-item">
+      <span>Obtén tu frecuencia</span>
+      <small>Adquiere tu dial digital</small>
+    </button>
+
+    <button id="drawerShareBtn" class="drawer-item">
+      <span>Compartir app</span>
+      <small>Enviar link</small>
+    </button>
+
+    <button class="drawer-item">
+      <span>Soporte técnico</span>
+      <small>Próximamente</small>
+    </button>
+
+    <button class="drawer-item">
+      <span>Ajustes</span>
+      <small>Cuenta y preferencias</small>
+    </button>
+
+    <button class="drawer-item">
+      <span>Redes sociales</span>
+      <small>Venevo digital</small>
+    </button>
+
+    <button class="drawer-item">
+      <span>Cast / TV</span>
+      <small>Próximamente</small>
+    </button>
+  </aside>
+
+  <!-- APP -->
+  <main class="app">
+
+    <!-- HEADER -->
+    <header class="top-header">
+      <button id="menuBtn" class="icon-btn liquid-btn" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+      </button>
+
+      <div class="brand-title">
+        <p>VENEVO MÚSICA</p>
+        <h1 id="radioNameTop">LA FAN</h1>
+      </div>
+
+      <div class="header-live-stack">
+        <div id="liveStatus" class="live-status paused">
+          <span></span>
+          <b>PAUSADO</b>
         </div>
-        <div class="header-right">
-            <div class="status-bar" id="statusIndicator">
-                <span class="cargando-dot"></span> CONECTANDO
-            </div>
-            <div class="stats-row">
-                <span><i class="fas fa-user fa-xs"></i> 2.773</span>
-                <span><i class="far fa-clock fa-xs"></i> <span id="liveTimer">00:00</span></span>
-            </div>
-            <div class="mode-switch">
-                <div class="mode-btn active" onclick="switchMode('radio')">RADIO</div>
-                <div class="mode-btn" onclick="switchMode('streaming')">STREAMING</div>
-            </div>
+
+        <div class="header-live-metrics">
+          <span class="header-metric-item">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M16.5 10.2a3.7 3.7 0 1 0-7.4 0a3.7 3.7 0 0 0 7.4 0Z"/>
+              <path d="M5.4 20.2c.8-3.7 3.6-6.1 6.9-6.1s6.1 2.4 6.9 6.1"/>
+              <path d="M18.1 12.4c1.7.5 3 1.8 3.5 3.7"/>
+              <path d="M5.9 12.4c-1.7.5-3 1.8-3.5 3.7"/>
+            </svg>
+            <span id="liveUsersCount">2.8K</span>
+          </span>
+
+          <span class="header-metric-item">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8.5 11.2c0-2.6 1.6-4.7 3.9-4.7s4 2 4 4.8c0 3.7-3.7 4.4-3.7 7.1a2.4 2.4 0 0 1-4.8 0"/>
+              <path d="M10.9 11.2c0-1.2.6-2.2 1.5-2.2s1.6 1 1.6 2.2"/>
+              <path d="M6 9.6c.4-3.8 2.9-6.6 6.3-6.6s6 2.9 6.4 6.7"/>
+            </svg>
+            <span id="listenTime">00:00:00</span>
+          </span>
         </div>
+
+        <div class="header-mode-tabs mode-tabs">
+          <button id="radioModeBtn" class="mode-tab active-mode">RADIO</button>
+          <button id="streamingModeBtn" class="mode-tab">STREAMING</button>
+        </div>
+      </div>
     </header>
 
-    <!-- CONTENIDO CENTRAL -->
-    <main>
-        <div class="player-stage">
-            <!-- Tarjeta Anterior -->
-            <div class="side-card" onclick="changeStation('prev')">
-                <h3 id="prevFreq">90.3</h3>
-                <p id="prevName">BUSINESSES</p>
-                <p id="prevLoc">IMBABURA</p>
-            </div>
-            
-            <!-- Dial Principal con Reproductor -->
-            <div class="radio-dial-container">
-                <div class="dial-ring"></div>
-                <div class="dial-center">
-                    <img src="https://lafanfm.com/wp-content/uploads/2021/02/LOGO-LA-FAN-FM-1-300x188.png" alt="La Fan FM" class="station-logo-large" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076778.png'">
-                    <div class="dial-spectrum" id="spectrumVisualizer"></div>
+    <!-- RADIO VIEW -->
+    <section id="radioView" class="view active-view">
+
+      <section id="radioModeBox">
+
+        <section id="dialArea" class="dial-container dial-stage">
+          <button id="prevRadio" class="nav-arrow left-arrow liquid-btn" aria-label="Radio anterior">‹</button>
+
+          <div class="radio-3d-carousel">
+
+            <article id="radioCardPrev" class="radio-3d-card card-left">
+              <div class="radio-card-glow"></div>
+
+              <div class="radio-card-inner">
+                <span class="radio-card-label">ANTERIOR</span>
+
+                <div class="radio-card-frequency">
+                  <span id="prevCardNumber">100.5</span>
                 </div>
-                <div class="nav-arrow prev" onclick="changeStation('prev')"><i class="fas fa-chevron-left"></i></div>
-                <div class="nav-arrow next" onclick="changeStation('next')"><i class="fas fa-chevron-right"></i></div>
+
+                <div class="radio-card-text">
+                  <h3 id="prevCardName">POX</h3>
+                  <p id="prevCardSubtitle">ENTRETENIMIENTO · LIVE</p>
+                </div>
+              </div>
+            </article>
+
+            <article id="radioCardCurrent" class="radio-3d-card card-center">
+              <div id="dialWrapper" class="dial-wrapper">
+                <div class="dial-glow"></div>
+                <div class="dial-ring"></div>
+                <div class="dial-ring second-ring"></div>
+                <div id="signalRing" class="signal-ring"></div>
+
+                <div class="dial-center">
+                  <video id="dialVideo" class="dial-video" muted loop playsinline preload="auto"></video>
+
+                  <span class="playing-text">FD · FRECUENCIA DIGITAL</span>
+                  <h2 id="dialNumber">90.5</h2>
+                  <h3 id="dialRadioName">LA FAN</h3>
+                  <p id="dialSubtitle">POP · TOP HITS</p>
+
+                  <div id="audioBars" class="waveform">
+                    <span></span><span></span><span></span>
+                    <span></span><span></span><span></span>
+                    <span></span><span></span>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article id="radioCardNext" class="radio-3d-card card-right">
+              <div class="radio-card-glow"></div>
+
+              <div class="radio-card-inner">
+                <span class="radio-card-label">SIGUIENTE</span>
+
+                <div class="radio-card-frequency">
+                  <span id="nextCardNumber">80.5</span>
+                </div>
+
+                <div class="radio-card-text">
+                  <h3 id="nextCardName">CLIP</h3>
+                  <p id="nextCardSubtitle">MÚSICA · HITS</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+
+          <button id="nextRadio" class="nav-arrow right-arrow liquid-btn" aria-label="Siguiente radio">›</button>
+        </section>
+
+        <!-- PLAYER -->
+        <section class="player-card liquid-card">
+
+          <div class="quick-actions player-actions">
+            <button id="shareBtn" class="quick-btn liquid-btn" aria-label="Compartir">
+              <svg viewBox="0 0 24 24">
+                <path d="M18 8a3 3 0 1 0-2.83-4H15a3 3 0 0 0 .17 1L8.91 8.64a3 3 0 1 0 0 4.72l6.26 3.64A3 3 0 1 0 16 15.2L9.74 11.6a3.3 3.3 0 0 0 0-1.2l6.26-3.6A3 3 0 0 0 18 8Z"/>
+              </svg>
+            </button>
+
+            <button id="favoriteBtn" class="quick-btn liquid-btn" aria-label="Favorito">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 21s-7-4.6-9.4-8.6C.3 8.6 2.4 4 6.7 4c2.1 0 3.7 1.1 4.6 2.6C12.2 5.1 13.8 4 15.9 4c4.3 0 6.4 4.6 4.1 8.4C19 14.5 16.9 16.5 12 21Z"/>
+              </svg>
+            </button>
+
+            <button id="playBtn" class="quick-btn play-btn liquid-play" aria-label="Reproducir">▶</button>
+
+            <button id="volumeBtn" class="quick-btn liquid-btn" aria-label="Volumen">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 9v6h4l5 4V5L8 9H4Z"/>
+                <path d="M16 8.5a5 5 0 0 1 0 7"/>
+              </svg>
+            </button>
+
+            <button id="commentsBtn" class="quick-btn liquid-btn" aria-label="Comentarios">
+              <svg viewBox="0 0 24 24">
+                <path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/>
+                <path d="M8 9h8M8 13h5"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="song-box song-box-now">
+            <div class="song-cover-main" id="songCoverMain">
+              <img id="nowCover" alt="Cover canción actual">
+              <video id="radioLogoVideo" autoplay muted loop playsinline></video>
             </div>
 
-            <!-- Tarjeta Siguiente -->
-            <div class="side-card" onclick="changeStation('next')">
-                <h3 id="nextFreq">80.5</h3>
-                <p id="nextName">CLIP</p>
-                <p id="nextLoc">HITS</p>
+            <div class="song-info">
+              <span id="songStatus" class="song-live"></span>
+
+              <h3 id="nowArtistBox" class="now-artist-mask">
+                <span id="nowArtistMain" class="now-artist-text">Venevo Música</span>
+              </h3>
+
+              <p id="nowTitleBox" class="now-title-mask">
+                <span id="nowTitle" class="now-title-text">Cargando canción...</span>
+              </p>
+
+              <div class="song-signal-line">
+                <div id="songProgressFill" class="song-progress-fill"></div>
+              </div>
+
+              <div class="song-times">
+                <small id="songElapsed">EN VIVO</small>
+                <small id="songDuration">LIVE</small>
+              </div>
             </div>
+          </div>
+
+          <div id="volumePanel" class="volume-panel hidden">
+            <input id="volumeSlider" type="range" min="0" max="1" step="0.01" value="1">
+          </div>
+
+          <p class="swipe-hint"></p>
+        </section>
+      </section>
+
+      <section id="streamingModeBox" class="streaming-mode hidden">
+        <div id="streamingContent" class="streaming-content liquid-card">
+          <p>Streaming no disponible por el momento.</p>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- FAVORITES VIEW -->
+    <section id="favoritesView" class="view">
+      <div class="section-head">
+        <h2>Favoritos</h2>
+        <p>Tus frecuencias guardadas.</p>
+      </div>
+      <div id="favoritesList" class="list-view"></div>
+    </section>
+
+    <!-- NEWS VIEW -->
+    <section id="newsView" class="view">
+      <div class="section-head">
+        <h2>Noticias</h2>
+        <p>Contenido, novedades y anuncios de Venevo.</p>
+      </div>
+
+      <div class="news-card liquid-card">
+        <span>PRÓXIMAMENTE</span>
+        <h3>Noticias y promociones</h3>
+        <p>Este espacio podrá conectarse después a Google Sheets para cargar noticias, videos, eventos y promociones.</p>
+      </div>
+    </section>
+
+    <!-- MORE VIEW -->
+    <section id="moreView" class="view">
+      <div class="section-head">
+        <h2>Más</h2>
+        <p>Herramientas y funciones generales.</p>
+      </div>
+
+      <button id="moreShareBtn" class="more-item liquid-card">Compartir Venevo</button>
+      <button class="more-item liquid-card">Soporte técnico</button>
+      <button class="more-item liquid-card">Ajustes</button>
+      <button class="more-item liquid-card">Publicidad</button>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav liquid-nav">
+    <button class="bottom-tab active-tab" data-view="radioView">
+      <svg viewBox="0 0 24 24">
+        <path d="M5 12a7 7 0 0 1 14 0"/>
+        <path d="M8 12a4 4 0 0 1 8 0"/>
+        <circle cx="12" cy="15" r="2"/>
+        <path d="M12 17v4"/>
+      </svg>
+      <span>Radios</span>
+    </button>
+
+    <button class="bottom-tab" id="bottomStreamingBtn" data-view="radioView">
+      <svg viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="12" rx="2"/>
+        <path d="M10 9l5 2-5 2V9Z"/>
+        <path d="M8 21h8"/>
+      </svg>
+      <span>Streaming</span>
+    </button>
+
+    <button class="bottom-tab" data-view="favoritesView">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 21s-7-4.6-9.4-8.6C.3 8.6 2.4 4 6.7 4c2.1 0 3.7 1.1 4.6 2.6C12.2 5.1 13.8 4 15.9 4c4.3 0 6.4 4.6 4.1 8.4C19 14.5 16.9 16.5 12 21Z"/>
+      </svg>
+      <span>Favoritos</span>
+    </button>
+
+    <button class="bottom-tab" data-view="newsView">
+      <svg viewBox="0 0 24 24">
+        <path d="M4 5h13a3 3 0 0 1 3 3v11H7a3 3 0 0 1-3-3V5Z"/>
+        <path d="M8 9h7M8 13h8M8 17h5"/>
+      </svg>
+      <span>Noticias</span>
+    </button>
+
+    <button class="bottom-tab" data-view="moreView">
+      <svg viewBox="0 0 24 24">
+        <circle cx="5" cy="12" r="2"/>
+        <circle cx="12" cy="12" r="2"/>
+        <circle cx="19" cy="12" r="2"/>
+      </svg>
+      <span>Más</span>
+    </button>
+  </nav>
+
+  <!-- MODAL OBTÉN TU FRECUENCIA -->
+  <section id="frequencyModal" class="frequency-modal hidden" aria-hidden="true">
+    <div id="frequencyModalOverlay" class="frequency-modal-overlay"></div>
+
+    <div class="frequency-panel liquid-card" role="dialog" aria-modal="true" aria-labelledby="frequencyModalTitle">
+      <div class="frequency-panel-header">
+        <div>
+          <span class="frequency-kicker">VENEVO DIGITAL</span>
+          <h2 id="frequencyModalTitle">Obtén tu frecuencia</h2>
+          <p>Reserva tu dial digital dentro de Venevo.</p>
         </div>
 
-        <!-- CONTROLES DE REPRODUCCIÓN -->
-        <section class="player-controls">
-            <i class="fas fa-share-alt control-icon" title="Compartir"></i>
-            <i class="far fa-heart control-icon" title="Favoritos"></i>
-            
-            <div class="play-btn" id="playPauseBtn" onclick="togglePlay()">
-                <i class="fas fa-play play-icon" id="playIcon"></i>
+        <button id="closeFrequencyModalBtn" class="frequency-close" aria-label="Cerrar">×</button>
+      </div>
+
+      <div class="frequency-note">
+        Las frecuencias Venevo son identificadores digitales internos basados en diales FM referenciales.
+      </div>
+
+      <div class="frequency-steps">
+
+        <!-- PASO 1 -->
+        <section class="frequency-step">
+          <div class="frequency-step-title">
+            <span>1</span>
+            <div>
+              <h3>Elige tu país</h3>
+              <p>Busca el país donde quieres adquirir tu frecuencia.</p>
             </div>
-            
-            <i class="fas fa-volume-up control-icon" title="Volumen" onclick="toggleMute()"></i>
-            <i class="far fa-comment-dots control-icon" title="Comentarios"></i>
+          </div>
+
+          <div class="frequency-search-box">
+            <input id="countrySearchInput" type="text" placeholder="Buscar país..." autocomplete="off">
+          </div>
+
+          <div id="countryList" class="frequency-options-list"></div>
         </section>
 
-        <!-- BARRA DE ESTADO DE EMISORA ACTUAL -->
-        <section class="current-station-bar">
-            <img src="https://lafanfm.com/wp-content/uploads/2021/02/LOGO-LA-FAN-FM-1-300x188.png" alt="La Fan FM" class="station-logo-tiny" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3076/3076778.png'">
-            <div class="station-info-text">
-                <h2 id="currentTitle">LA FAN FM</h2>
-                <p id="currentDesc">Transmitiendo en vivo</p>
+        <!-- PASO 2 -->
+        <section id="provinceStep" class="frequency-step frequency-step-disabled">
+          <div class="frequency-step-title">
+            <span>2</span>
+            <div>
+              <h3>Elige provincia / departamento</h3>
+              <p>Selecciona la zona donde estará tu dial digital.</p>
             </div>
-            <div class="live-progress-container">
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill"></div>
-                </div>
-                <div class="live-time-labels">
-                    <span>EN VIVO</span>
-                    <span>LIVE</span>
-                </div>
-            </div>
+          </div>
+
+          <div class="frequency-search-box">
+            <input id="provinceSearchInput" type="text" placeholder="Buscar provincia o departamento..." autocomplete="off" disabled>
+          </div>
+
+          <div id="provinceList" class="frequency-options-list"></div>
         </section>
-    </main>
 
-    <!-- PIE DE PÁGINA (NAVEGACIÓN) -->
-    <footer>
-        <nav class="nav-bar">
-            <div class="nav-item active">
-                <i class="fas fa-podcast"></i>
-                <span>Radios</span>
+        <!-- PASO 3 -->
+        <section id="frequencyStep" class="frequency-step frequency-step-disabled">
+          <div class="frequency-step-title">
+            <span>3</span>
+            <div>
+              <h3>Busca tu frecuencia</h3>
+              <p>Revisa si el número está libre u ocupado.</p>
             </div>
-            <div class="nav-item">
-                <i class="fas fa-play-circle"></i>
-                <span>Streaming</span>
+          </div>
+
+          <div class="frequency-search-box">
+            <input id="frequencySearchInput" type="text" placeholder="Buscar número, ejemplo 93.1..." autocomplete="off" disabled>
+          </div>
+
+          <div id="frequencyResults" class="frequency-results-list"></div>
+        </section>
+
+        <!-- PASO 4 -->
+        <section id="frequencyBuyBox" class="frequency-buy-box hidden">
+          <div class="selected-frequency-card">
+            <span class="selected-label">Frecuencia seleccionada</span>
+            <h3 id="selectedFrequencyTitle">93.1 FD</h3>
+            <p id="selectedFrequencyLocation">Colombia / Nariño</p>
+            <strong id="selectedFrequencyPrice">$0</strong>
+          </div>
+
+          <div class="frequency-form">
+            <div class="frequency-form-grid">
+              <label>
+                Nombre de la radio
+                <input id="requestRadioName" type="text" placeholder="Ej: Radio Éxito">
+              </label>
+
+              <label>
+                Titular
+                <input id="requestOwnerName" type="text" placeholder="Nombre del titular">
+              </label>
+
+              <label>
+                WhatsApp
+                <input id="requestWhatsapp" type="tel" placeholder="Ej: +593...">
+              </label>
+
+              <label>
+                Correo
+                <input id="requestEmail" type="email" placeholder="correo@ejemplo.com">
+              </label>
+
+              <label>
+                Stream de la radio
+                <input id="requestStream" type="url" placeholder="https://.../stream">
+              </label>
+
+              <label>
+                API Now Playing
+                <input id="requestApiNowPlaying" type="url" placeholder="https://.../api/nowplaying/...">
+              </label>
+
+              <label>
+                Streaming Live
+                <input id="requestStreamingLive" type="url" placeholder="YouTube, Facebook, Twitch o link live">
+              </label>
             </div>
-            <div class="nav-item">
-                <i class="far fa-heart"></i>
-                <span>Favoritos</span>
+
+            <div class="frequency-color-section">
+              <span class="frequency-color-title">Colores de tu radio</span>
+              <p>Escoge dos colores para personalizar el fondo y el estilo visual de tu frecuencia.</p>
+
+              <div class="frequency-color-grid">
+                <label>
+                  Color principal
+                  <input id="requestColor1" type="color" value="#FF4B00">
+                </label>
+
+                <label>
+                  Color secundario
+                  <input id="requestColor2" type="color" value="#FFD000">
+                </label>
+              </div>
             </div>
-            <div class="nav-item">
-                <i class="far fa-newspaper"></i>
-                <span>Noticias</span>
-            </div>
-            <div class="nav-item">
-                <i class="fas fa-ellipsis-h"></i>
-                <span>Más</span>
-            </div>
-        </nav>
-    </footer>
 
-    <!-- JAVASCRIPT -->
-    <script>
-        const audio = document.getElementById('audioStream');
-        const playIcon = document.getElementById('playIcon');
-        const statusIndicator = document.getElementById('statusIndicator');
-        const spectrumBars = document.querySelectorAll('.spectrum-bar');
-        
-        let isPlaying = false;
+            <label class="frequency-observation-label">
+              Observación
+              <textarea id="requestObservation" rows="3" placeholder="Cuéntanos algún detalle adicional de tu radio."></textarea>
+            </label>
 
-        // Lista de estaciones simuladas para navegación lateral
-        const stations = [
-            { freq: '90.3', name: 'BUSINESSES', loc: 'IMBABURA', url: 'https://radio.megahostec.com/listen/radio_la_fan_fm/stream' },
-            { freq: 'LA FAN', name: 'LA FAN FM', loc: 'EN VIVO', url: 'https://radio.megahostec.com/listen/radio_la_fan_fm/stream' },
-            { freq: '80.5', name: 'CLIP', loc: 'HITS', url: 'https://radio.megahostec.com/listen/radio_la_fan_fm/stream' }
-        ];
-        let currentIndex = 1;
+            <button id="submitFrequencyRequestBtn" class="frequency-submit-btn">
+              Enviar solicitud
+            </button>
 
-        // Auto-reproducir al cargar la página (Inicia el stream inmediatamente)
-        window.addEventListener('DOMContentLoaded', () => {
-            generateSpectrumBars();
-            startTimer();
+            <p id="frequencyFormMessage" class="frequency-form-message"></p>
+          </div>
+        </section>
 
-            audio.play().then(() => {
-                isPlaying = true;
-                playIcon.classList.remove('fa-play');
-                playIcon.classList.add('fa-pause');
-                statusIndicator.innerHTML = '<span style="color: var(--accent-color);">ONLINE</span>';
-                setSpectrumActive(true);
-            }).catch(error => {
-                console.log("Autoplay bloqueado por políticas del navegador:", error);
-                statusIndicator.innerHTML = '<span style="color: #ff9999;">PULSA PLAY</span>';
-                isPlaying = false;
-                playIcon.classList.remove('fa-pause');
-                playIcon.classList.add('fa-play');
-                setSpectrumActive(false);
-            });
-        });
+      </div>
+    </div>
+  </section>
 
-        function togglePlay() {
-            if (isPlaying) {
-                audio.pause();
-                isPlaying = false;
-                playIcon.classList.remove('fa-pause');
-                playIcon.classList.add('fa-play');
-                statusIndicator.innerHTML = '<span style="color: #ff9999;">PAUSADO</span>';
-                setSpectrumActive(false);
-            } else {
-                audio.play().then(() => {
-                    isPlaying = true;
-                    playIcon.classList.remove('fa-play');
-                    playIcon.classList.add('fa-pause');
-                    statusIndicator.innerHTML = '<span style="color: var(--accent-color);">ONLINE</span>';
-                    setSpectrumActive(true);
-                }).catch(err => {
-                    console.error("Error al reproducir:", err);
-                });
-            }
-        }
+  <audio id="radioPlayer"></audio>
 
-        function toggleMute() {
-            audio.muted = !audio.muted;
-        }
-
-        function changeStation(direction) {
-            if (direction === 'prev') {
-                currentIndex = (currentIndex - 1 + stations.length) % stations.length;
-            } else {
-                currentIndex = (currentIndex + 1) % stations.length;
-            }
-            
-            const current = stations[currentIndex];
-            document.getElementById('currentTitle').innerText = current.name;
-            document.getElementById('currentDesc').innerText = current.loc;
-            
-            audio.src = current.url;
-            audio.play().then(() => {
-                isPlaying = true;
-                playIcon.classList.remove('fa-play');
-                playIcon.classList.add('fa-pause');
-                setSpectrumActive(true);
-            });
-            updateSideCards();
-        }
-
-        function updateSideCards() {
-            const prevIdx = (currentIndex - 1 + stations.length) % stations.length;
-            const nextIdx = (currentIndex + 1) % stations.length;
-
-            document.getElementById('prevFreq').innerText = stations[prevIdx].freq;
-            document.getElementById('prevName').innerText = stations[prevIdx].name;
-            document.getElementById('prevLoc').innerText = stations[prevIdx].loc;
-
-            document.getElementById('nextFreq').innerText = stations[nextIdx].freq;
-            document.getElementById('nextName').innerText = stations[nextIdx].name;
-            document.getElementById('nextLoc').innerText = stations[nextIdx].loc;
-        }
-
-        function generateSpectrumBars() {
-            const container = document.getElementById('spectrumVisualizer');
-            container.innerHTML = '';
-            for (let i = 0; i < 20; i++) {
-                const bar = document.createElement('div');
-                bar.classList.add('spectrum-bar');
-                bar.style.animationDelay = `${Math.random() * 0.5}s`;
-                container.appendChild(bar);
-            }
-        }
-
-        function setSpectrumActive(active) {
-            document.querySelectorAll('.spectrum-bar').forEach(bar => {
-                bar.style.animationPlayState = active ? 'running' : 'paused';
-            });
-        }
-
-        function switchMode(mode) {
-            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        // Cronómetro simple en vivo
-        function startTimer() {
-            let seconds = 0;
-            setInterval(() => {
-                seconds++;
-                let mins = Math.floor(seconds / 60);
-                let secs = seconds % 60;
-                document.getElementById('liveTimer').innerText = 
-                    (mins < 10 ? "0" + mins : mins) + ":" + (secs < 10 ? "0" + secs : secs);
-            }, 1000);
-        }
-    </script>
+  <script src="script.js?v=215"></script>
 </body>
 </html>
