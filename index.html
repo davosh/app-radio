@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venevo Música - Frecuencia Digital</title>
+    <style>
+        :root {
+            --bg-color: #0b0b0e;
+            --card-bg: #16161a;
+            --accent-color: #8b5cf6;
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Background video wrapper */
+        .bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* Sidebar / Aside */
+        aside {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            padding: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 5rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        /* Player Card */
+        .player-card {
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .album-art {
+            width: 180px;
+            height: 180px;
+            background: #27272a;
+            border-radius: 1rem;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .album-art img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .station-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .station-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background: #27272a;
+        }
+
+        /* Sections extra */
+        .section-box {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-box h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-box p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Bottom Nav */
+        nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(11, 11, 14, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 1rem;
+            z-index: 10;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        nav button.active {
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Video de fondo opcional (si tienes el archivo local, cámbialo en src) -->
+    <video class="bg-video" autoplay muted loop playsinline>
+        <source src="venevologovideo.mp4" type="video/mp4">
+    </video>
+
+    <aside>
+        <div class="brand">
+            <div class="brand-logo">V</div>
+            <div>
+                <h3>Venevo Música</h3>
+                <p style="color: var(--text-secondary); font-size: 0.8rem;">Frecuencia Digital</p>
+            </div>
+        </div>
+        <button class="btn btn-secondary" onclick="alert('Función de obtener frecuencia')">Obtener Dial</button>
+    </aside>
+
+    <main>
+        <header>
+            <p>VENEVO MÚSICA</p>
+            <h1>LA FAN</h1>
+        </header>
+
+        <section class="player-card">
+            <div class="album-art">
+                <!-- Puedes cambiar la ruta de la imagen o dejar el placeholder -->
+                <span style="color: var(--text-secondary);">🎵</span>
+            </div>
+
+            <div class="station-info">
+                <h3>Venevo Música</h3>
+                <p id="status-text">Cargando transmisión en vivo...</p>
+            </div>
+
+            <div class="controls">
+                <button class="btn" id="play-btn">Reproducir</button>
+            </div>
+        </section>
+
+        <section class="section-box">
+            <h2>Favoritos</h2>
+            <p>Tus frecuencias guardadas aparecerán aquí.</p>
+        </section>
+
+        <section class="section-box">
+            <h2>Noticias</h2>
+            <p>Este espacio está preparado para conectar novedades y anuncios de Venevo.</p>
+        </section>
+    </main>
+
+    <nav>
+        <button class="active">🏠 <span>Inicio</span></button>
+        <button>⭐ <span>Favoritos</span></button>
+        <button>📰 <span>Noticias</span></button>
+        <button>⚙️ <span>Más</span></button>
+    </nav>
+
+    <script>
+        const playBtn = document.getElementById('play-btn');
+        const statusText = document.getElementById('status-text');
+        let isPlaying = false;
+
+        playBtn.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                playBtn.textContent = 'Pausar';
+                statusText.textContent = 'Transmitiendo en Vivo (LIVE)';
+            } else {
+                playBtn.textContent = 'Reproducir';
+                statusText.textContent = 'Pausado';
+            }
+        });
+    </script>
+</body>
+</html>
